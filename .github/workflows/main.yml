@@ -5,21 +5,23 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: devkitpro/toolchain:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install 3DS dependencies
-        run: |
-          dgp-install 3ds-libctru 3ds-rules
+      - name: Setup devkitPro Pacman
+        uses: devkitPro/actions/setup@v1
 
-      - name: Build project
+      - name: Install 3DS Dependencies
+        run: |
+          dkp-pacman -Syu --noconfirm
+          dkp-pacman -S --noconfirm 3ds-libctru 3ds-rules
+
+      - name: Build Project
         run: |
           make
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: 3ds_web_hub
