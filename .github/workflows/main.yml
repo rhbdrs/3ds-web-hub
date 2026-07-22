@@ -5,14 +5,17 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: devkitpro/toolchain:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup devkitPro
+        uses: devkitPro/actions/setup@main
+
       - name: Install 3DS dependencies
         run: |
-          dgp-install 3ds-libctru 3ds-rules
+          dkp-pacman -Syu --noconfirm
+          dkp-pacman -S --noconfirm 3ds-libctru 3ds-rules
 
       - name: Build project
         run: |
