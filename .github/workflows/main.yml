@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-ubuntu-latest # ou ubuntu-latest
     runs-on: ubuntu-latest
     container:
       image: devkitpro/toolchain:latest
