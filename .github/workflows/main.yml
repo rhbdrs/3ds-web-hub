@@ -9,16 +9,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup devkitPro
-        uses: devkitPro/actions/setup@main
-
-      - name: Install 3DS dependencies
+      - name: Install devkitPro pacman & 3DS tools
         run: |
-          dkp-pacman -Syu --noconfirm
-          dkp-pacman -S --noconfirm 3ds-libctru 3ds-rules
+          sudo apt-get update
+          sudo apt-get install -y curl bzip2 xz-utils libarchive-tools
+          
+          # Téléchargement et installation du gestionnaire pacman de devkitPro
+          sudo dkp-pacman --version || {
+            curl -L https://github.com/devkitPro/pacman/releases/download/v1.0.2/devkitpro-pacman.amd64.deb -o dkp.deb
+            sudo dpkg -i dkp.deb || sudo apt-get install -f -y
+          }
+
+          # Installation des briques 3DS
+          sudo dkp-pacman -Syu --noconfirm
+          sudo dkp-pacman -S --noconfirm 3ds-libctru 3ds-rules devkitARM
 
       - name: Build project
         run: |
+          # Ajout du chemin des binaires devkitARM au PATH de l'action
+          export DEVKITPRO=/opt/devkitpro
+          export DEVKITARM=${DEVKITPRO}/devkitARM
           make
 
       - name: Upload artifact
